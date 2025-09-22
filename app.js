@@ -3,7 +3,7 @@ let signer;
 
 // ZenChain Testnet details
 const ZENCHAIN_PARAMS = {
-  chainId: "0x20E8", // 8408 in hex
+  chainId: "0x20d8", // 8408 in hex
   chainName: "ZenChain Testnet",
   nativeCurrency: {
     name: "ZenChain Test Coin",
