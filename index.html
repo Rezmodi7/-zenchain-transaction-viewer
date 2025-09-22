@@ -4,14 +4,15 @@
   <meta charset="UTF-8">
   <title>ZenChain Testnet DApp</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
+  <!-- لینک درست ethers.js نسخه 5 -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
 </head>
 <body>
   <h1>ZenChain Testnet - Simple DApp</h1>
   
   <button onclick="connectWallet()">Connect Wallet</button>
   <p id="walletAddress">Wallet: Not connected</p>
-  <p id="balance">Balance: 0 ZTC</p> <!-- Balance display -->
+  <p id="balance">Balance: 0 ZTC</p>
 
   <h3>Send Transaction</h3>
   <input type="text" id="toAddress" placeholder="Recipient address">
