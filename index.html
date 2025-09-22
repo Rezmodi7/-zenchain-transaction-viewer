@@ -1,25 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>ZenChain Testnet DApp</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
-</head>
-<body>
-  <h1>ZenChain Testnet - Simple DApp</h1>
-  
-  <button onclick="connectWallet()">Connect Wallet</button>
-  <p id="walletAddress">Wallet: Not connected</p>
-  <p id="balance">Balance: 0 ZTC</p> <!-- Balance display -->
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 40px;
+  background: #f4f4f4;
+}
 
-  <h3>Send Transaction</h3>
-  <input type="text" id="toAddress" placeholder="Recipient address">
-  <input type="text" id="amount" placeholder="Amount (ZTC)">
-  <button onclick="sendTransaction()">Send</button>
+h1 {
+  color: #2e7d32;
+}
 
-  <p id="status"></p>
+input {
+  padding: 8px;
+  margin: 5px;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
 
-  <script src="app.js"></script>
-</body>
-</html>
+button {
+  padding: 8px 15px;
+  margin: 10px;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background: #1b5e20;
+}
+
+#status {
+  margin-top: 20px;
+  font-weight: bold;
+  color: #333;
+}
