@@ -58,12 +58,12 @@ async function refreshBalanceAndInfo(){
 async function connectWallet(){
   try{
     setStatus('Connecting...');
-    if (!window.ethereum) { setStatus('MetaMask not found'); alert('لطفاً MetaMask را نصب کنید'); return }
+    if (!window.ethereum) { setStatus('MetaMask not found'); alert('Please Install MetaMask'); return }
     await window.ethereum.request({ method: 'eth_requestAccounts' });
     await ensureProvider();
     await switchToZenChain();
     await refreshBalanceAndInfo();
-    setStatus('✅ Connected to ZenChain');
+    setStatus('✅ Connected');
     sendBtn().disabled = false;
   }catch(err){ console.error(err); setStatus('Connection error'); alert(err.message || err) }
 }
@@ -73,18 +73,18 @@ async function sendNativeToken(){
   const amount = amountInput().value.trim();
   txStatusEl().innerText = '';
   if (!window.ethereum) return alert('MetaMask not found');
-  if (!window.ethers.utils.isAddress(to)) return alert('آدرس مقصد نامعتبر است');
-  if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) return alert('مقدار نامعتبر است');
+  if (!window.ethers.utils.isAddress(to)) return alert('The address is invalid.');
+  if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) return alert('The value is invalid.');
 
   try{
     const value = window.ethers.utils.parseEther(amount);
     const txResponse = await signer.sendTransaction({ to, value });
-    txStatusEl().innerHTML = `Tx sent: <a href="${ZENCHAIN_PARAMS.blockExplorerUrls[0]}/tx/${txResponse.hash}" target="_blank">${txResponse.hash}</a> (pending)`;
+    txStatusEl().innerHTML = `Tx sent: <a href="${ZENCHAIN_PARAMS.blockExplorerUrls["https://zentrace.io/"]}/tx/${txResponse.hash}" target="_blank">${txResponse.hash}</a> (pending)`;
 
     const receipt = await txResponse.wait(1);
-    txStatusEl().innerHTML = `✅ Confirmed: <a href="${ZENCHAIN_PARAMS.blockExplorerUrls[0]}/tx/${receipt.transactionHash}" target="_blank">${receipt.transactionHash}</a> (block ${receipt.blockNumber})`;
+    txStatusEl().innerHTML = `✅ Confirmed: <a href="${ZENCHAIN_PARAMS.blockExplorerUrls["https://zentrace.io/"]}/tx/${receipt.transactionHash}" target="_blank">${receipt.transactionHash}</a> (block ${receipt.blockNumber})`;
     await refreshBalanceAndInfo();
-  }catch(err){ console.error(err); alert('خطا در ارسال تراکنش: '+(err.message||err)) }
+  }catch(err){ console.error(err); alert('Error sending transaction'+(err.message||err)) }
 }
 
 async function fetchHistoryFor(address){
@@ -123,10 +123,10 @@ window.addEventListener('DOMContentLoaded', ()=>{
       if (!provider) await ensureProvider();
       let addr = queryAddressInput().value.trim();
       if (!addr){ 
-        if (!signer) return alert('ابتدا وصل شوید یا آدرس را وارد کنید');
+        if (!signer) return alert('Connect, or enter the address');
         addr = await signer.getAddress();
       }
-      if (!window.ethers.utils.isAddress(addr)) return alert('آدرس نامعتبر است');
+      if (!window.ethers.utils.isAddress(addr)) return alert('The address is invalid.');
       await fetchHistoryFor(addr);
     }catch(e){ console.error(e); alert(e.message||e) }
   });
