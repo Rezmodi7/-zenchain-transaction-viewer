@@ -1,29 +1,199 @@
 :root{
   --bg:#f3f6ff;
   --card:#ffffff;
-  --accent:#4d47fe;
+  --accent:#4d47fe; /* رنگ اصلی: بنفش جذاب */
   --accent-2:#3631b7;
-  --muted:#6b7280;
+  --muted:#6b7280; /* رنگ متن‌های فرعی */
 }
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);font-family:IRANSans, Arial, sans-serif;color:#222}
-.topbar{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:linear-gradient(90deg,var(--card),#f7f8ff);box-shadow:0 1px 4px rgba(0,0,0,0.06)}
-.topbar .brand{font-weight:700;font-size:1.1rem;color:var(--accent)}
-.wrap{max-width:900px;margin:30px auto;padding:12px}
-.card{background:var(--card);border-radius:12px;padding:22px;box-shadow:0 8px 30px rgba(50,50,93,0.06)}
-h1{margin:0 0 8px 0}
-.controls-row{display:flex;gap:10px;align-items:center}
-.btn{background:#fff;border:1px solid #e6e9f2;padding:10px 14px;border-radius:8px;cursor:pointer}
-.btn.primary{background:var(--accent);color:#fff;border:none}
-.btn:disabled{opacity:0.55;cursor:not-allowed}
-.status{margin-left:10px;color:var(--muted);font-weight:600}
-.wallet-info{margin-top:12px;padding:12px;border-radius:8px;background:#fbfbff}
-.hidden{display:none}
-.send-section input, .history-section input{width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #e8eaf6}
-.tx-status{margin-top:8px;min-height:28px}
-.tx-list{margin-top:12px;border-radius:8px;padding:10px;background:#fafbff;min-height:80px}
-.tx-item{padding:8px;border-bottom:1px solid #e9ecff}
-.tx-item:last-child{border-bottom:none}
-.tx-item .meta{font-size:0.85rem;color:var(--muted)}
-.footer{max-width:900px;margin:12px auto;color:var(--muted);font-size:0.85rem;text-align:center}
-@media (min-width:900px){.controls-row{gap:16px}}
+
+/* Base Styles */
+*{
+  box-sizing: border-box;
+}
+
+body{
+  margin: 0;
+  background: var(--bg);
+  /* فونت را به یک فونت انگلیسی عمومی تغییر می‌دهیم */
+  font-family: 'Arial', sans-serif; 
+  color: #222;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.topbar{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  background: linear-gradient(90deg, var(--card), #f7f8ff);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.topbar .brand{
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--accent);
+}
+
+.wrap{
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 12px;
+}
+
+/* Card Style */
+.card{
+  background: var(--card);
+  border-radius: 12px;
+  padding: 22px;
+  box-shadow: 0 8px 30px rgba(50, 50, 93, 0.06);
+}
+
+h1{
+  margin: 0 0 8px 0;
+  font-size: 1.8rem;
+}
+
+h2 {
+  margin-top: 20px;
+  font-size: 1.3rem;
+  color: #333;
+}
+
+/* Controls */
+.controls-row{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.btn{
+  background: #fff;
+  border: 1px solid #e6e9f2;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  white-space: nowrap; /* از شکسته شدن متن دکمه جلوگیری می‌کند */
+}
+
+.btn.primary{
+  background: var(--accent);
+  color: #fff;
+  border: none;
+}
+
+.btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.btn.primary:hover:not(:disabled) {
+  background: var(--accent-2);
+}
+
+.btn:disabled{
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.status{
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Wallet and Send Sections */
+.wallet-info{
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #fbfbff;
+  border: 1px solid #e9ecff;
+}
+
+.wallet-info strong {
+  color: #444;
+}
+
+.hidden{
+  display: none;
+}
+
+.send-section input, .history-section input{
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0 15px 0;
+  border-radius: 8px;
+  border: 1px solid #e8eaf6;
+  font-size: 1rem;
+}
+
+.send-section label, .history-section label {
+  display: block;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #555;
+  margin-top: 10px;
+}
+
+.tx-status{
+  margin-top: 8px;
+  min-height: 28px;
+  font-size: 0.9rem;
+  color: var(--accent-2);
+}
+
+/* Transaction History */
+.tx-list{
+  margin-top: 12px;
+  border-radius: 8px;
+  padding: 10px;
+  background: #fafbff;
+  min-height: 80px;
+  border: 1px solid #f0f3ff;
+}
+
+.tx-item{
+  padding: 8px;
+  border-bottom: 1px solid #e9ecff;
+  text-align: left;
+}
+
+.tx-item:last-child{
+  border-bottom: none;
+}
+
+.tx-item .meta{
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* Footer */
+.footer{
+  max-width: 900px;
+  margin: 12px auto;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .controls-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .btn {
+    width: 100%;
+    margin: 5px 0;
+  }
+  .status {
+    margin-left: 0;
+    text-align: center;
+  }
+}
