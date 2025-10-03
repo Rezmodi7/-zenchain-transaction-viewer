@@ -1,86 +1,141 @@
 let provider;
 let signer;
 
-// ZenChain Testnet network parameters
 const ZENCHAIN_PARAMS = {
-  chainId: "0x20d8", // 8408 in hex
+  chainId: "0x20d8",
   chainName: "ZenChain Testnet",
-  nativeCurrency: {
-    name: "ZenChain Token",
-    symbol: "ZTC",
-    decimals: 18,
-  },
+  nativeCurrency: { name: "ZenChain Token", symbol: "ZTC", decimals: 18 },
   rpcUrls: ["https://zenchain-testnet.api.onfinality.io/public"],
-  blockExplorerUrls: ["https://zentrace.io/"],
+  blockExplorerUrls: ["https://zentrace.io/"]
 };
 
-async function connectWallet() {
-  const statusEl = document.getElementById("status");
-  const addressEl = document.getElementById("walletAddress");
-  const balanceEl = document.getElementById("balance");
+// DOM helpers
+const connectBtn = () => document.getElementById('connectBtn');
+const statusEl = () => document.getElementById('status');
+const addressEl = () => document.getElementById('walletAddress');
+const balanceEl = () => document.getElementById('balance');
+const walletInfoEl = () => document.getElementById('walletInfo');
+const sendBtn = () => document.getElementById('sendBtn');
+const toAddressInput = () => document.getElementById('toAddress');
+const amountInput = () => document.getElementById('amount');
+const txStatusEl = () => document.getElementById('txStatus');
+const refreshBtn = () => document.getElementById('refreshBtn');
+const viewTxBtn = () => document.getElementById('viewTxBtn');
+const queryAddressInput = () => document.getElementById('queryAddress');
+const txListEl = () => document.getElementById('txList');
 
-  // Clear previous info
-  addressEl.innerText = "";
-  balanceEl.innerText = "";
-  statusEl.innerText = "Connecting...";
+function setStatus(text){ statusEl().innerText = text }
 
-  if (!window.ethereum) {
-    statusEl.innerText = "MetaMask not detected.";
-    alert("لطفاً MetaMask را نصب کنید.");
-    return;
-  }
-  if (typeof window.ethers === 'undefined') {
-    statusEl.innerText = "ethers.js library not loaded.";
-    alert("کتابخانه ethers.js لود نشده است.");
-    return;
-  }
+async function ensureProvider(){
+  if (!window.ethereum) throw new Error('MetaMask not detected');
+  provider = new window.ethers.providers.Web3Provider(window.ethereum, 'any');
+  signer = provider.getSigner();
+}
 
-  try {
-    // Request wallet connection
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-
-    // Setup provider and signer
-    provider = new window.ethers.providers.Web3Provider(window.ethereum, "any");
-    signer = provider.getSigner();
-
-    // Check current network
-    const currentChainId = await window.ethereum.request({ method: "eth_chainId" });
-
-    if (currentChainId !== ZENCHAIN_PARAMS.chainId) {
-      try {
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: ZENCHAIN_PARAMS.chainId }],
-        });
-      } catch (switchError) {
-        // If chain not added, add it
-        if (switchError.code === 4902) {
-          await window.ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: [ZENCHAIN_PARAMS],
-          });
-        } else {
-          throw switchError;
-        }
-      }
+async function switchToZenChain(){
+  const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
+  if (currentChainId !== ZENCHAIN_PARAMS.chainId) {
+    try {
+      await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: ZENCHAIN_PARAMS.chainId }] });
+    } catch (err) {
+      if (err.code === 4902) {
+        await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [ZENCHAIN_PARAMS] });
+      } else throw err;
     }
-
-    // Get user address and balance
-    const address = await signer.getAddress();
-    const balance = await provider.getBalance(address);
-
-    addressEl.innerText = "Wallet: " + address;
-    balanceEl.innerText = "Balance: " + window.ethers.utils.formatEther(balance) + " ZTC";
-    statusEl.innerText = "✅ Connected to ZenChain";
-
-  } catch (err) {
-    console.error(err);
-    statusEl.innerText = "Connection Error";
-    alert("خطا در اتصال: " + (err.message || err));
   }
 }
 
-// Event listener for connect button
-document.addEventListener("DOMContentLoaded", function() {
-  document.getElementById("connectBtn").addEventListener("click", connectWallet);
+async function refreshBalanceAndInfo(){
+  try{
+    const address = await signer.getAddress();
+    const balance = await provider.getBalance(address);
+    addressEl().innerText = address;
+    balanceEl().innerText = window.ethers.utils.formatEther(balance) + ' ZTC';
+    walletInfoEl().classList.remove('hidden');
+  }catch(e){console.error(e)}
+}
+
+async function connectWallet(){
+  try{
+    setStatus('Connecting...');
+    if (!window.ethereum) { setStatus('MetaMask not found'); alert('لطفاً MetaMask را نصب کنید'); return }
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+    await ensureProvider();
+    await switchToZenChain();
+    await refreshBalanceAndInfo();
+    setStatus('✅ Connected to ZenChain');
+    sendBtn().disabled = false;
+  }catch(err){ console.error(err); setStatus('Connection error'); alert(err.message || err) }
+}
+
+async function sendNativeToken(){
+  const to = toAddressInput().value.trim();
+  const amount = amountInput().value.trim();
+  txStatusEl().innerText = '';
+  if (!window.ethereum) return alert('MetaMask not found');
+  if (!window.ethers.utils.isAddress(to)) return alert('آدرس مقصد نامعتبر است');
+  if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) return alert('مقدار نامعتبر است');
+
+  try{
+    const value = window.ethers.utils.parseEther(amount);
+    const txResponse = await signer.sendTransaction({ to, value });
+    txStatusEl().innerHTML = `Tx sent: <a href="${ZENCHAIN_PARAMS.blockExplorerUrls[0]}/tx/${txResponse.hash}" target="_blank">${txResponse.hash}</a> (pending)`;
+
+    const receipt = await txResponse.wait(1);
+    txStatusEl().innerHTML = `✅ Confirmed: <a href="${ZENCHAIN_PARAMS.blockExplorerUrls[0]}/tx/${receipt.transactionHash}" target="_blank">${receipt.transactionHash}</a> (block ${receipt.blockNumber})`;
+    await refreshBalanceAndInfo();
+  }catch(err){ console.error(err); alert('خطا در ارسال تراکنش: '+(err.message||err)) }
+}
+
+async function fetchHistoryFor(address){
+  txListEl().innerHTML = 'Loading...';
+  try{
+    const history = await provider.getHistory(address);
+    if (!history || history.length === 0){
+      txListEl().innerHTML = '<div class="tx-item">No transactions found (or RPC does not provide history)</div>';
+      return;
+    }
+    const slice = history.slice(-20).reverse();
+    txListEl().innerHTML = '';
+    slice.forEach(t => {
+      const item = document.createElement('div'); item.className='tx-item';
+      const from = t.from || '—';
+      const to = t.to || '—';
+      const value = window.ethers.utils.formatEther(t.value || '0');
+      const time = t.timestamp ? new Date(t.timestamp*1000).toLocaleString() : 'N/A';
+      item.innerHTML = `<div><strong>Hash:</strong> <a href="${ZENCHAIN_PARAMS.blockExplorerUrls[0]}/tx/${t.hash}" target="_blank">${t.hash}</a></div>
+                        <div class="meta">${time} — from ${from} → to ${to} — ${value} ZTC</div>`;
+      txListEl().appendChild(item);
+    });
+  }catch(err){
+    console.error(err);
+    txListEl().innerHTML = '<div class="tx-item">Failed to fetch history from RPC. Use a block-explorer API.</div>';
+  }
+}
+
+// UI wiring
+window.addEventListener('DOMContentLoaded', ()=>{
+  connectBtn().addEventListener('click', connectWallet);
+  sendBtn().addEventListener('click', sendNativeToken);
+  refreshBtn().addEventListener('click', async ()=>{ if(!signer) return alert('Connect first'); await refreshBalanceAndInfo(); });
+  viewTxBtn().addEventListener('click', async ()=>{
+    try{
+      if (!provider) await ensureProvider();
+      let addr = queryAddressInput().value.trim();
+      if (!addr){ 
+        if (!signer) return alert('ابتدا وصل شوید یا آدرس را وارد کنید');
+        addr = await signer.getAddress();
+      }
+      if (!window.ethers.utils.isAddress(addr)) return alert('آدرس نامعتبر است');
+      await fetchHistoryFor(addr);
+    }catch(e){ console.error(e); alert(e.message||e) }
+  });
+
+  if (window.ethereum){
+    window.ethereum.on('accountsChanged', async (accounts)=>{
+      if (accounts.length===0){ setStatus('Not connected'); walletInfoEl().classList.add('hidden'); sendBtn().disabled=true } 
+      else { await ensureProvider(); await refreshBalanceAndInfo(); setStatus('Connected'); sendBtn().disabled=false }
+    });
+    window.ethereum.on('chainChanged', async ()=>{ location.reload(); });
+  }
 });
