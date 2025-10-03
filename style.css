@@ -1,10 +1,10 @@
 :root {
-  --bg: #f8f9fa;
-  --card: #fff;
-  --border: #e5e7eb;
-  --text: #222;
+  --bg: #f0fdf4;
+  --card: #ffffff;
+  --border: #d1fae5;
+  --text: #064e3b;
   --muted: #6b7280;
-  --primary: #222;
+  --primary: #047857;
 }
 
 * {
@@ -77,7 +77,7 @@ h2 {
 }
 
 .btn:hover:not(:disabled) {
-  background: #f1f1f1;
+  background: #d1fae5;
 }
 
 .btn:disabled {
@@ -94,13 +94,22 @@ h2 {
   margin-top: 8px;
   padding: 10px;
   border-radius: 6px;
-  background: #f6f7f9;
+  background: #ecfdf5;
   border: 1px solid var(--border);
   font-size: 0.97rem;
 }
 
 .wallet-info strong {
   color: var(--primary);
+}
+
+#walletAddress,
+#balance {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  max-width: 100%;
 }
 
 .hidden {
@@ -133,11 +142,19 @@ h2 {
   color: var(--primary);
 }
 
+.tx-status a {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  max-width: 100%;
+}
+
 .tx-list {
   margin-top: 8px;
   border-radius: 6px;
   padding: 8px;
-  background: #f6f7f9;
+  background: #ecfdf5;
   min-height: 64px;
   border: 1px solid var(--border);
 }
@@ -151,6 +168,14 @@ h2 {
 
 .tx-item:last-child {
   border-bottom: none;
+}
+
+.tx-item a {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  max-width: 100%;
 }
 
 .tx-item .meta {
@@ -185,4 +210,4 @@ h2 {
     margin-left: 0;
     text-align: center;
   }
-  }
+}
