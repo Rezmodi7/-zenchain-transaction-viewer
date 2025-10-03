@@ -2,24 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ZenChain Testnet DApp</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
-  <script defer src="app.js"></script>
+  <title>ZenChain Wallet Connection</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Load ethers.js from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 </head>
 <body>
-  <h1>ZenChain Testnet - Simple DApp</h1>
-  
-  <button onclick="connectWallet()">Connect Wallet</button>
-  <p id="walletAddress">Wallet: Not connected</p>
-  <p id="balance">Balance: 0 ZTC</p>
-
-  <h3>Send Transaction</h3>
-  <input type="text" id="toAddress" placeholder="Recipient address">
-  <input type="text" id="amount" placeholder="Amount (ZTC)">
-  <button onclick="sendTransaction()">Send</button>
-
-  <p id="status"></p>
-
+  <div class="container">
+    <h1>ZenChain Wallet Connector</h1>
+    <button id="connectBtn">Connect Wallet</button>
+    <div id="status" class="status">Not Connected</div>
+    <div id="walletInfo">
+      <div id="walletAddress"></div>
+      <div id="balance"></div>
+    </div>
+  </div>
+  <script src="app.js"></script>
 </body>
 </html>
