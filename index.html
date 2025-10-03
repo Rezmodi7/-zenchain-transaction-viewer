@@ -1,23 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <title>ZenChain Wallet Connection</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ZenChain Wallet Connector</title>
   <link rel="stylesheet" href="styles.css">
-  <!-- Load ethers.js from CDN -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>ZenChain Wallet Connector</h1>
-    <button id="connectBtn">Connect Wallet</button>
-    <div id="status" class="status">Not Connected</div>
-    <div id="walletInfo">
-      <div id="walletAddress"></div>
-      <div id="balance"></div>
-    </div>
-  </div>
+  <header class="topbar">
+    <div class="brand">ZenChain</div>
+    <div class="network">Testnet</div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <h1>اتصال کیف پول</h1>
+      <div class="controls-row">
+        <button id="connectBtn" class="btn">Connect Wallet</button>
+        <div id="status" class="status">Not connected</div>
+      </div>
+
+      <div id="walletInfo" class="wallet-info hidden">
+        <div><strong>آدرس:</strong> <span id="walletAddress"></span></div>
+        <div><strong>موجودی:</strong> <span id="balance"></span></div>
+      </div>
+
+      <hr>
+
+      <div class="send-section">
+        <h2>ارسال ZTC</h2>
+        <label>آدرس گیرنده</label>
+        <input id="toAddress" placeholder="0x...">
+        <label>مقدار (ZTC)</label>
+        <input id="amount" placeholder="0.01">
+        <div class="controls-row">
+          <button id="sendBtn" class="btn primary" disabled>Send</button>
+          <button id="refreshBtn" class="btn" title="Refresh balance & history">Refresh</button>
+        </div>
+        <div id="txStatus" class="tx-status"></div>
+      </div>
+
+      <hr>
+
+      <div class="history-section">
+        <h2>مشاهده تراکنش‌ها</h2>
+        <label>آدرس برای جستجو</label>
+        <input id="queryAddress" placeholder="آدرس والت مورد نظر (یا خالی برای من)"> 
+        <div class="controls-row">
+          <button id="viewTxBtn" class="btn">View Transactions</button>
+        </div>
+        <div id="txList" class="tx-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">Built for ZenChain — native token ZTC (testnet)</footer>
+
   <script src="app.js"></script>
 </body>
 </html>
