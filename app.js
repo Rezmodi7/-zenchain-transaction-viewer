@@ -1,9 +1,7 @@
-<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-<script>
 let provider;
 let signer;
 
-// مشخصات شبکه ZenChain Testnet
+// ZenChain Testnet network parameters
 const ZENCHAIN_PARAMS = {
   chainId: "0x20d8", // 8408 in hex
   chainName: "ZenChain Testnet",
@@ -16,22 +14,36 @@ const ZENCHAIN_PARAMS = {
   blockExplorerUrls: ["https://zentrace.io/"],
 };
 
-// اتصال به کیف پول و شبکه
 async function connectWallet() {
-  if (!window.ethereum || !window.ethers) {
-    alert("لطفاً MetaMask و کتابخانه ethers.js را نصب کنید");
+  const statusEl = document.getElementById("status");
+  const addressEl = document.getElementById("walletAddress");
+  const balanceEl = document.getElementById("balance");
+
+  // Clear previous info
+  addressEl.innerText = "";
+  balanceEl.innerText = "";
+  statusEl.innerText = "Connecting...";
+
+  if (!window.ethereum) {
+    statusEl.innerText = "MetaMask not detected.";
+    alert("لطفاً MetaMask را نصب کنید.");
+    return;
+  }
+  if (typeof window.ethers === 'undefined') {
+    statusEl.innerText = "ethers.js library not loaded.";
+    alert("کتابخانه ethers.js لود نشده است.");
     return;
   }
 
   try {
-    // درخواست اتصال به کیف پول
+    // Request wallet connection
     await window.ethereum.request({ method: "eth_requestAccounts" });
 
-    // ساخت provider و signer
-    provider = new ethers.providers.Web3Provider(window.ethereum);
+    // Setup provider and signer
+    provider = new window.ethers.providers.Web3Provider(window.ethereum, "any");
     signer = provider.getSigner();
 
-    // بررسی شبکه فعلی
+    // Check current network
     const currentChainId = await window.ethereum.request({ method: "eth_chainId" });
 
     if (currentChainId !== ZENCHAIN_PARAMS.chainId) {
@@ -41,6 +53,7 @@ async function connectWallet() {
           params: [{ chainId: ZENCHAIN_PARAMS.chainId }],
         });
       } catch (switchError) {
+        // If chain not added, add it
         if (switchError.code === 4902) {
           await window.ethereum.request({
             method: "wallet_addEthereumChain",
@@ -52,19 +65,22 @@ async function connectWallet() {
       }
     }
 
-    // نمایش آدرس و موجودی
+    // Get user address and balance
     const address = await signer.getAddress();
     const balance = await provider.getBalance(address);
 
-    document.getElementById("walletAddress").innerText = "Wallet: " + address;
-    document.getElementById("balance").innerText =
-      "Balance: " + ethers.utils.formatEther(balance) + " ZTC";
-
-    document.getElementById("status").innerText = "✅ Connected to ZenChain";
+    addressEl.innerText = "Wallet: " + address;
+    balanceEl.innerText = "Balance: " + window.ethers.utils.formatEther(balance) + " ZTC";
+    statusEl.innerText = "✅ Connected to ZenChain";
 
   } catch (err) {
     console.error(err);
-    alert("خطا در اتصال: " + err.message);
+    statusEl.innerText = "Connection Error";
+    alert("خطا در اتصال: " + (err.message || err));
   }
 }
-</script>
+
+// Event listener for connect button
+document.addEventListener("DOMContentLoaded", function() {
+  document.getElementById("connectBtn").addEventListener("click", connectWallet);
+});
